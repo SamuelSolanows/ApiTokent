@@ -1,10 +1,12 @@
 package com.example.apitokent
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.apitokent.Model.Api.Api
+import com.example.apitokent.Model.Models.Instructors
 import com.example.apitokent.Model.Models.Students
 import com.example.apitokent.databinding.ActivityMainBinding
 import retrofit2.Call
@@ -31,12 +33,13 @@ class MainActivity : AppCompatActivity() {
             btnPost.setOnClickListener {
                 PostStudents()
             }
+
         }
     }
 
     private fun PostStudents() {
         binding.txt.text = ""
-        var NewStudent = Students(1, "Nohelis", "luna", "Null", "nohelis", "12345")
+        var NewStudent = Students(1, "Dainer", "Vargas", "Null", "dainer", "12345")
         Api.build.PostStudent(Api.token, NewStudent).enqueue(object : Callback<Students> {
             override fun onResponse(call: Call<Students>, response: Response<Students>) {
                 if (response.isSuccessful) {
@@ -75,17 +78,13 @@ class MainActivity : AppCompatActivity() {
     private fun GetStudentsId() {
         binding.txt.text = ""
         var id = binding.etxt.text.toString()
-        Api.build.GetForId(Api.token, id).enqueue(object : Callback<List<Students>> {
-            override fun onResponse(
-                call: Call<List<Students>>, response: Response<List<Students>>
-            ) {
+        Api.build.GetForId(Api.token, "2").enqueue(object : Callback<Students> {
+            override fun onResponse(call: Call<Students>, response: Response<Students>) {
                 var a = response.body()
-                a?.forEach {
-                    binding.txt.append(it.FirstName)
-                }
+                binding.txt.setText(a?.FirstName)
             }
 
-            override fun onFailure(call: Call<List<Students>>, t: Throwable) {
+            override fun onFailure(call: Call<Students>, t: Throwable) {
                 t.message?.let { Log.e("Error", it) }
             }
         })
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     var a = response.body()
                     a?.forEach {
-                        binding.txt.append("${it.FirstName}  ${it.LastName}")
+                        binding.txt.append("${it.Id}   ${it.FirstName}  ${it.LastName} \n")
                     }
                 } else {
                     Toast.makeText(this@MainActivity, "Kgao", Toast.LENGTH_SHORT).show()
